@@ -1,0 +1,55 @@
+# Every currency is its own microservice container; the gateway serves the UI
+# on http://127.0.0.1:8777. Start with:  docker compose up --build -d
+x-service: &service
+  build: .
+  image: cryptomon:latest
+  restart: unless-stopped
+  volumes:
+    - cryptomon-data:/data
+
+services:
+  btc:
+    <<: *service
+    command: ["service", "--asset", "BTC", "--addr", "0.0.0.0:9101", "--data", "/data", "--usdt-url", "http://usdt:9103"]
+  eth:
+    <<: *service
+    command: ["service", "--asset", "ETH", "--addr", "0.0.0.0:9102", "--data", "/data", "--usdt-url", "http://usdt:9103"]
+  usdt:
+    <<: *service
+    command: ["service", "--asset", "USDT", "--addr", "0.0.0.0:9103", "--data", "/data", "--usdt-url", "http://usdt:9103"]
+  ton:
+    <<: *service
+    command: ["service", "--asset", "TON", "--addr", "0.0.0.0:9104", "--data", "/data", "--usdt-url", "http://usdt:9103"]
+  usd:
+    <<: *service
+    command: ["service", "--asset", "USD", "--addr", "0.0.0.0:9111", "--data", "/data", "--usdt-url", "http://usdt:9103"]
+  eur:
+    <<: *service
+    command: ["service", "--asset", "EUR", "--addr", "0.0.0.0:9112", "--data", "/data", "--usdt-url", "http://usdt:9103"]
+  rub:
+    <<: *service
+    command: ["service", "--asset", "RUB", "--addr", "0.0.0.0:9113", "--data", "/data", "--usdt-url", "http://usdt:9103"]
+  cny:
+    <<: *service
+    command: ["service", "--asset", "CNY", "--addr", "0.0.0.0:9114", "--data", "/data", "--usdt-url", "http://usdt:9103"]
+  jpy:
+    <<: *service
+    command: ["service", "--asset", "JPY", "--addr", "0.0.0.0:9115", "--data", "/data", "--usdt-url", "http://usdt:9103"]
+  inr:
+    <<: *service
+    command: ["service", "--asset", "INR", "--addr", "0.0.0.0:9116", "--data", "/data", "--usdt-url", "http://usdt:9103"]
+  chf:
+    <<: *service
+    command: ["service", "--asset", "CHF", "--addr", "0.0.0.0:9117", "--data", "/data", "--usdt-url", "http://usdt:9103"]
+  gbp:
+    <<: *service
+    command: ["service", "--asset", "GBP", "--addr", "0.0.0.0:9118", "--data", "/data", "--usdt-url", "http://usdt:9103"]
+  gateway:
+    <<: *service
+    command: ["gateway", "--addr", "0.0.0.0:8777", "--data", "/data", "--services", "BTC=http://btc:9101,ETH=http://eth:9102,USDT=http://usdt:9103,TON=http://ton:9104,USD=http://usd:9111,EUR=http://eur:9112,RUB=http://rub:9113,CNY=http://cny:9114,JPY=http://jpy:9115,INR=http://inr:9116,CHF=http://chf:9117,GBP=http://gbp:9118"]
+    ports:
+      - "127.0.0.1:8777:8777"
+    depends_on: [btc, eth, usdt, ton, usd, eur, rub, cny, jpy, inr, chf, gbp]
+
+volumes:
+  cryptomon-data:
